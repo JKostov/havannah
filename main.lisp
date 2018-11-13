@@ -3,4 +3,5 @@
 
 (gameConfig)
 (initGame *numberOfCells*)
-(print *state*)
+;; (print *state*)
+(printState *state* *numberOfCells*)
