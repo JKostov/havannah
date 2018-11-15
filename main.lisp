@@ -1,7 +1,11 @@
 (load "gameConfig.lisp")
 (load "game.lisp")
+(load "helpers.lisp")
 
 (gameConfig)
 (initGame *numberOfCells*)
-;; (print *state*)
-(printState *state* *numberOfCells*)
+(printGame *state* *numberOfCells*)
+(enterMove)
+(printGame *state* *numberOfCells*)
+(enterMove)
+(printGame *state* *numberOfCells*)

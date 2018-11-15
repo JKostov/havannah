@@ -1,5 +1,6 @@
 
 (defvar *state* '()) ;List used for current game state representation
+(defvar *minus*); Used for printing
 
 (defun initRow (numberOfCells realNumberOfCells start stop)
     (cond
@@ -12,7 +13,7 @@
 (defun initColumn (start stop)
     (cond
         ( (> start stop) '() )
-        ( t (append (initColumn (1+ start) stop ) (list (list start "-")) ) )
+        ( t (append (list (list start "-")) (initColumn (1+ start) stop ) ) )
     )
 )
 
@@ -22,11 +23,12 @@
     
 )
 
-(defun printState (state numberOfCells)
+(defun printGame (state numberOfCells)
+    (setq *minus* 1)
     (format t "~%")
-    (printEmptySpace numberOfCells)
-    (printNumbersLabel 0 numberOfCells)
-    (printRow numberOfCells state)
+    (printEmptySpace (+ 2 numberOfCells))
+    (printNumbersLabel 0 (1- numberOfCells))
+    (printRow (1- numberOfCells) state numberOfCells)
 )
 
 (defun printEmptySpace (number)
@@ -43,20 +45,29 @@
     )
 )
 
-(defun div (x y)
-    (/ (- x (mod x y)) y)
-)
-
-(defun printRow (rowNumber state)
+(defun printRow (rowNumber state emptySpaceNumber)
     (cond
         ( (null state) '() )
-        (t (format t "~a " (caar state)) (printEmptySpace (- (* 2 *numberOfCells*) (mod (* 2 *numberOfCells*) rowNumber))) (printNumber rowNumber state (cadar state)) )
+        (t (format t "~a " (caar state)) (printEmptySpace emptySpaceNumber) (printNumber rowNumber state (cadar state) emptySpaceNumber) )
     )
 )
 
-(defun printNumber (rowNumber state rowList)
+(defun printNumber (rowNumber state rowList emptySpaceNumber)
     (cond
-        ( (null rowList) (if (< rowNumber (- (* 2  *numberOfCells*) 2)) (format t "~a" (1+ rowNumber))) (format t "~%") (printRow (1+ rowNumber) (cdr state)) )
-        ( t (format t "~a" (cadar rowList)) (printNumber rowNumber state (cdr rowList)) )
+        ( (null rowList) (if (< rowNumber (- (* 2  *numberOfCells*) 2)) (format t "~a" (1+ rowNumber))) (if (= emptySpaceNumber 1) (setq *minus* 0)) (format t "~%") (printRow (1+ rowNumber) (cdr state) (if (= 1 *minus*) (1- emptySpaceNumber) (1+ emptySpaceNumber) )) )
+        ( t (format t "~a " (cadar rowList)) (printNumber rowNumber state (cdr rowList) emptySpaceNumber) )
+    )
+)
+
+(defun enterMove ()
+    (format t "~%~a is on the move. Insert your move (A 1):" *currentPlayer*)
+    (setq move (read))
+    (if (null (checkIfValidAndPlay (car move) (cadr move))) (progn (format t "~%Invalid move!") (enterMove)) (changePlayer) )
+)
+
+(defun changePlayer ()
+    (cond
+        ( (equal *currentPlayer* "X") (setq *currentPlayer* "O"))
+        (t (setq *currentPlayer* "X"))
     )
 )
