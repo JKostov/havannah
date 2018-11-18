@@ -1,15 +1,20 @@
 
-(defvar *state* '()) ;List used for current game state representation
+(defvar *state* '()) ;List used for current game state representation format:  (("A" ( (1 "-") (2 "-") ... )) ("B" ( (1 "-") (2 "-") ... )) ...)
 (defvar *minus*); Used for printing
 
-(defun initRow (numberOfCells realNumberOfCells start stop)
+;Recursive function used for row initialization (("A" ( (1 "-") (2 "-") ... )) ("B" ( (1 "-") (2 "-") ... )) ...)
+;For each row calls initColumn function for row columns initialization
+(defun initRow (currentLetter numberOfCells start stop)
     (cond
-        ( (> numberOfCells (+ 65 (* 2 (1- realNumberOfCells)))) '() )
-        ( (not (= stop (* 2 (1- realNumberOfCells)))) (append (initRow (1+ numberOfCells) realNumberOfCells start (1+ stop)) (list (list (string (code-char numberOfCells)) (initColumn start stop) )) )  )
-        ( t (append (initRow (1+ numberOfCells) realNumberOfCells (1+ start) stop) (list (list (string (code-char numberOfCells)) (initColumn start stop) )) )  )
+        ( (> currentLetter (+ 65 (* 2 (1- numberOfCells)))) '() )
+        ;while stop < 2 * (numberOfCells - 1) => call initRow with start and stop += 1
+        ( (not (= stop (* 2 (1- numberOfCells)))) (append (initRow (1+ currentLetter) numberOfCells start (1+ stop)) (list (list (string (code-char currentLetter)) (initColumn start stop) )) )  )
+        ;If stop = 2 * (numbertOfCells - 1) call initRow with start += 1 and stop
+        ( t (append (initRow (1+ currentLetter) numberOfCells (1+ start) stop) (list (list (string (code-char currentLetter)) (initColumn start stop) )) )  )
     )
 )
 
+;Recursive function used for row columns state initialization: ( (1 "-") (2 "-") )
 (defun initColumn (start stop)
     (cond
         ( (> start stop) '() )
@@ -17,20 +22,24 @@
     )
 )
 
+;Function that sets the global variable state with the state representation list
 (defun initGame (numberOfCells)
 
     (setq *state* (reverse (initRow 65 numberOfCells 0 (1- numberOfCells))))
     
 )
 
+;Function used for printing the game board
 (defun printGame (state numberOfCells)
-    (setq *minus* 1)
+    (setq *minus* 1) ;Used for printing
     (format t "~%")
+    ;Prints empty space before numbers label
     (printEmptySpace (+ 2 numberOfCells))
     (printNumbersLabel 0 (1- numberOfCells))
     (printRow (1- numberOfCells) state numberOfCells)
 )
 
+;Recursive function used for printing empty space
 (defun printEmptySpace (number)
     (cond
         ( (= number 0) '() )
@@ -38,6 +47,7 @@
     )
 )
 
+;Recursive function used for printing numbers label format: tmp tmp+1 tmp+2 ...
 (defun printNumbersLabel (tmp numberOfCells)
     (cond
         ( (> tmp numberOfCells) (format t "~%") )
@@ -45,29 +55,19 @@
     )
 )
 
+;Recursive function used for printing one row format: Letter EmptySpace RowColumns
 (defun printRow (rowNumber state emptySpaceNumber)
     (cond
         ( (null state) '() )
-        (t (format t "~a " (caar state)) (printEmptySpace emptySpaceNumber) (printNumber rowNumber state (cadar state) emptySpaceNumber) )
+        (t (format t "~a " (caar state)) (printEmptySpace emptySpaceNumber) (printRowColumns rowNumber state (cadar state) emptySpaceNumber) )
     )
 )
 
-(defun printNumber (rowNumber state rowList emptySpaceNumber)
+;Recursive function used for printing rows columns
+;If *minus* => emptySpaceNumber -= 1 else emptySpaceNumber += 1
+(defun printRowColumns (rowNumber state rowList emptySpaceNumber)
     (cond
         ( (null rowList) (if (< rowNumber (- (* 2  *numberOfCells*) 2)) (format t "~a" (1+ rowNumber))) (if (= emptySpaceNumber 1) (setq *minus* 0)) (format t "~%") (printRow (1+ rowNumber) (cdr state) (if (= 1 *minus*) (1- emptySpaceNumber) (1+ emptySpaceNumber) )) )
-        ( t (format t "~a " (cadar rowList)) (printNumber rowNumber state (cdr rowList) emptySpaceNumber) )
-    )
-)
-
-(defun enterMove ()
-    (format t "~%~a is on the move. Insert your move (A 1):" *currentPlayer*)
-    (setq move (read))
-    (if (null (checkIfValidAndPlay (car move) (cadr move))) (progn (format t "~%Invalid move!") (enterMove)) (changePlayer) )
-)
-
-(defun changePlayer ()
-    (cond
-        ( (equal *currentPlayer* "X") (setq *currentPlayer* "O"))
-        (t (setq *currentPlayer* "X"))
+        ( t (format t "~a " (cadar rowList)) (printRowColumns rowNumber state (cdr rowList) emptySpaceNumber) )
     )
 )
