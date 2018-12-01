@@ -4,13 +4,10 @@
 
 (gameConfig) ;Initialize game configuration
 (initGame *numberOfCells*) ;Initialize game state
-(printGame *state* *numberOfCells*) ;Print game board
+(printGame (returnLatestState) *numberOfCells*) ;Print game board
 
-(enterMove)
-(printGame *state* *numberOfCells*)
-(enterMove)
-(printGame *state* *numberOfCells*)
-(enterMove)
-(printGame *state* *numberOfCells*)
-(enterMove)
-(printGame *state* *numberOfCells*)
+(do
+    ((go *gameOver* (setq go *gameOver*)))
+    ( (not (null go)) )
+    (progn (testGameOver) (enterMovePrintBoard)) ;(printStates (returnPossibleStates (returnLatestState))))
+)

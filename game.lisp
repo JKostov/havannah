@@ -1,6 +1,6 @@
-
-(defvar *state* '()) ;List used for current game state representation format:  (("A" ( (1 "-") (2 "-") ... )) ("B" ( (1 "-") (2 "-") ... )) ...)
+(defvar *states* '()) ;List used to store game states based on players moves, format:  ( (("A" ( (1 "-") (2 "-") ... )) ("B" ( (1 "-") (2 "-") ... )) ...) )
 (defvar *minus*); Used for printing
+(defvar *gameOver* '()) ;Global variable used to signalize when the game is over
 
 ;Recursive function used for row initialization (("A" ( (1 "-") (2 "-") ... )) ("B" ( (1 "-") (2 "-") ... )) ...)
 ;For each row calls initColumn function for row columns initialization
@@ -25,8 +25,7 @@
 ;Function that sets the global variable state with the state representation list
 (defun initGame (numberOfCells)
 
-    (setq *state* (reverse (initRow 65 numberOfCells 0 (1- numberOfCells))))
-    
+    (setq *states* (list (reverse (initRow 65 numberOfCells 0 (1- numberOfCells)))))
 )
 
 ;Function used for printing the game board
