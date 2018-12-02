@@ -58,6 +58,7 @@
           ((equalp el (car l)) t)
           (t (clanp el (cdr l)))))
 
+;; adds backward relationship to current move, connecting already played moves that are his neighbours with him
 (defun addBackwardRelationship (list graph node)
     (let ((currentRow (car graph))
           (currentNode (caar graph))

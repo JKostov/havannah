@@ -1,6 +1,6 @@
 (defvar *edges* '())
 (defvar *sides* '())
-
+;; generates list of all edges depending on number of cells
 (defun generateEdges (numberOfCells)
     (setq *edges* 
         (append
@@ -14,13 +14,15 @@
     )
 )
 
+;;generates list of sides
 (defun generateSideList (numberOfLetter start stop)
     (cond
         ( (> start stop) '() )
         ( t (append (list (list (string (code-char numberOfLetter)) start)) (generateSideList numberOfLetter (1+ start) stop ) ) )
     )
 )
-
+;; helper for generating list of sides
+;---------------------------------------------------------------------------
 (defun generateSides (numberOfCells)
     (setq *sides* 
         (removeAllElements *edges*
@@ -56,6 +58,11 @@
         (t (append (list (list (string (code-char letter)) number)) (getSideListPlusLetterDown (1+ letter) number numberOfCells) ))
     )
 )
+
+;---------------------------------------------------------------
+
+;; group of functions that are used for move to be passed to the list of sides and his side should be removed
+;; function is used for fork game over check
 
 (defun removeAllElements (elements list)
     (cond
