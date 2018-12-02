@@ -10,7 +10,7 @@
 (printGame (returnLatestState) *numberOfCells*) ;Print game board
 
 (generateEdges *numberOfCells*)
-(generateSides (returnLatestState) *numberOfCells* )
+(generateSides *numberOfCells* )
 (print *sides*)
 
 (do

@@ -2,6 +2,7 @@
 (defvar *neighbours* '())
 (defvar *xMovesGraph* '())
 (defvar *oMovesGraph* '())
+(defvar *currentSides* '())
 
 ;; helper function for findingNeighbours - checks if current element is valid neighbour
 (defun checkIfValidPosition (letter index state)
@@ -134,19 +135,20 @@
 ;------------------------------------------------------------------------------------
 
 (defun checkForkEndGame(move sign state)
-    (setq *sides* (generateSides (returnLatestState) *numberOfCells*))
+    (setq *currentSides* (copy-tree *sides*))
     (if (string= sign "X") 
-        (checkFork move *xMovesGraph* *newSides* sign state)
+        (checkFork move *xMovesGraph* sign state)
     )
     (if (string= sign "O") 
-        (checkFork move *oMovesGraph* *newSides* sign state)
+        (checkFork move *oMovesGraph* sign state)
     )
 )
 
-(defun checkFork (move graph newSides sign state)
+(defun checkFork (move graph sign state)
     (findNeighbours (car move) (cadr move) state)
     (let ((validNeighbours (filterMyNeighbours *neighbours* sign state)))
-        (cond ((null validNeighbours) '())
+        (cond 
+            ((null validNeighbours) '())
             ;; za svakog od suseda proveri da li je side,
                 ;; ako jeste onda izbaci tu stranu iz novi sides
             ;; ako new sides ima count 3 elementa posle toga onda je kraj
