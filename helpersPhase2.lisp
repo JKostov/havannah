@@ -117,11 +117,9 @@
 ;;bridge
 ;------------------------------------------------------------------------------------
 (defun checkBridgeEndGame (move sign)
-    (if (string= sign "X") 
-        (if (eql 2 (checkBridge move *xMovesGraph* *edges*)) t '())
-    )
-    (if (string= sign "O") 
-        (if (eql 2 (checkBridge move *xMovesGraph* *edges*)) t '())
+    (cond
+        ( (string= sign "X") (= 2 (checkBridge move *xMovesGraph* *edges*)) )
+        ( (string= sign "O") (= 2 (checkBridge move *oMovesGraph* *edges*)) )
     )
 )
 
@@ -136,6 +134,7 @@
 ;------------------------------------------------------------------------------------
 
 (defun checkForkEndGame(move sign state)
+    (setq *sides* (generateSides (returnLatestState) *numberOfCells*))
     (if (string= sign "X") 
         (checkFork move *xMovesGraph* *newSides* sign state)
     )

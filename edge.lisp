@@ -25,9 +25,9 @@
     (setq *sides* 
         (removeAllElements *edges*
             (append
-                (generateSideList 65 0 (1- numberOfCells))
-                (getFirstAndLastElementFromState state)
-                (generateSideList (+ 65 (* 2 (1- numberOfCells))) (1- numberOfCells) (* 2 (1- numberOfCells)) )
+                (list (generateSideList 65 1 (- numberOfCells 2)))
+                (list (getFirstAndLastElementFromState state))
+                (list (generateSideList (+ 65 (* 2 (1- numberOfCells))) numberOfCells (1- (* 2 (1- numberOfCells))) ))
             )
         )
     )
