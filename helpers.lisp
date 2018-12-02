@@ -1,4 +1,4 @@
-(load "helpersMoveGraph.lisp")
+(load "helpersPhase2.lisp")
 
 ;Function that check if the move is valid for the sent state
 (defun checkIfValid (state letter index)
