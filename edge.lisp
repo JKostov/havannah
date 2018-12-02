@@ -22,12 +22,32 @@
 )
 
 (defun generateSides (state numberOfCells)
-    (setq *edges* 
-        (append
-            (generateSideList 65 0 (1- numberOfCells))
-            (generateSideList (+ 65 (* 2 (1- numberOfCells))) (1- numberOfCells) (* 2 (1- numberOfCells)) )
+    (setq *sides* 
+        (removeAllElements *edges*
+            (append
+                (generateSideList 65 0 (1- numberOfCells))
+                (getFirstAndLastElementFromState state)
+                (generateSideList (+ 65 (* 2 (1- numberOfCells))) (1- numberOfCells) (* 2 (1- numberOfCells)) )
+            )
         )
     )
 )
 
-(print (generateSides '() 6))
+(defun getFirstAndLastElementFromState (state)
+    (cond
+        ( (null state) '() )
+        ( t (append (list (list (caar state) (car (caadar state)))) (list (list (caar state) (caar (last (cadar state))))) (getFirstAndLastElementFromState (cdr state))))
+    )
+)
+
+(defun removeAllElements (elements list)
+    (cond
+        ( (null list) list )
+        ( (member (car list) elements :test 'equal) (removeAllElements elements (cdr list)) )
+        ( t (cons (car list) (removeAllElements elements (cdr list)) ))
+    )
+)
+
+
+;; (print (generateEdges 6))
+;; (print (generateSides '() 6))
