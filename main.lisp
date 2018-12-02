@@ -15,7 +15,6 @@
 
 (do
     ((go *gameOver* (setq go *gameOver*)))
-    ( (not (null go)) )
+    ( (not (null go)) (format t "Game over. ~%~a has won!" *currentPlayer*))
     (progn (testGameOver) (enterMovePrintBoard)) ;(printStates (returnPossibleStates (returnLatestState))))
 )
-

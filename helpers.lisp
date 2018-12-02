@@ -20,7 +20,7 @@
                 (playMoveOnStateForPlayer (car move) (cadr move) state *currentPlayer*) 
                 (prepareAndAddToMoveGraph move *currentPlayer* state)
                 (setq *gameOver* (checkBridgeEndGame move *currentPlayer*))
-                (changePlayer) 
+                (if (null *gameOver*) (changePlayer)) 
             )
         )
     )
