@@ -19,6 +19,10 @@
         ( t (prog1 
                 (playMoveOnStateForPlayer (car move) (cadr move) state *currentPlayer*) 
                 (prepareAndAddToMoveGraph move *currentPlayer* state)
+                (trace nadji-put)
+                (trace checkBridge)
+                (trace checkBridgeEndGame)
+                (setq *gameOver* (checkBridgeEndGame move *currentPlayer*))
                 (changePlayer) 
             )
         )
