@@ -1,4 +1,3 @@
-(load "edge.lisp")
 
 (defvar *neighbours* '())
 (defvar *xMovesGraph* '())
@@ -110,4 +109,53 @@
 (defun forkCondition (connected)
     (cond ((>= (checkCount connected *sides*) 3) t)
           (t '()))
+)
+
+
+;;nadji-put (graf l cilj cvorovi)
+
+;;bridge
+;------------------------------------------------------------------------------------
+(defun checkBridgeEndGame (move sign)
+    (if (string= sign "X") 
+        (if (eql 2 (checkBridge move *xMovesGraph* *edges*)) t '())
+    )
+    (if (string= sign "O") 
+        (if (eql 2 (checkBridge move *xMovesGraph* *edges*)) t '())
+    )
+)
+
+(defun checkBridge (move graph edges)
+     (cond ((null edges) '0)
+           ((not (null  (nadji-put graph (list move) (car edges) '()))) (1+ (checkBridge move graph (cdr edges))))
+           (t (checkBridge move graph (cdr edges)))
+    )
+)
+
+;;fork
+;------------------------------------------------------------------------------------
+
+(defun checkForkEndGame(move sign state)
+    (if (string= sign "X") 
+        (checkFork move *xMovesGraph* *newSides* sign state)
+    )
+    (if (string= sign "O") 
+        (checkFork move *oMovesGraph* *newSides* sign state)
+    )
+)
+
+(defun checkFork (move graph newSides sign state)
+    (findNeighbours (car move) (cadr move) state)
+    (let ((validNeighbours (filterMyNeighbours *neighbours* sign state)))
+        (cond ((null validNeighbours) '())
+            ;; za svakog od suseda proveri da li je side,
+                ;; ako jeste onda izbaci tu stranu iz novi sides
+            ;; ako new sides ima count 3 elementa posle toga onda je kraj
+            ;; ide se u rekurziju i oruje rezultat
+        )   
+    )
+)
+
+(defun checkIfSide (neighbours new Sides)
+
 )
