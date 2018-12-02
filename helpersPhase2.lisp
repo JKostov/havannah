@@ -143,6 +143,10 @@
     (if (string= sign "O") 
         (checkFork move sign state)
     )
+    (cond 
+            ( (< (length *currentSides*) 4) t)
+            ( t '())
+    )
 )
 
 (defun checkFork (move sign state)
@@ -152,6 +156,7 @@
         (cond 
             ((null validNeighbours) '())
             ( (< (length *currentSides*) 4) '())
+            ( t (dolist (n validNeighbours) (checkFork n sign state) ))
             ;; za svakog od suseda proveri da li je side,
                 ;; ako jeste onda izbaci tu stranu iz novi sides
             ;; ako new sides ima count 3 elementa posle toga onda je kraj
