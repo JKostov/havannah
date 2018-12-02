@@ -137,18 +137,20 @@
 (defun checkForkEndGame(move sign state)
     (setq *currentSides* (copy-tree *sides*))
     (if (string= sign "X") 
-        (checkFork move *xMovesGraph* sign state)
+        (checkFork move sign state)
     )
     (if (string= sign "O") 
-        (checkFork move *oMovesGraph* sign state)
+        (checkFork move sign state)
     )
 )
 
-(defun checkFork (move graph sign state)
+(defun checkFork (move sign state)
     (findNeighbours (car move) (cadr move) state)
     (let ((validNeighbours (filterMyNeighbours *neighbours* sign state)))
+        (setq *currentSides* (removeSidesForMoves *currentSides* validNeighbours))
         (cond 
             ((null validNeighbours) '())
+            ( (< (length *currentSides*) 4) '())
             ;; za svakog od suseda proveri da li je side,
                 ;; ako jeste onda izbaci tu stranu iz novi sides
             ;; ako new sides ima count 3 elementa posle toga onda je kraj

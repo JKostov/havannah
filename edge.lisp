@@ -72,3 +72,10 @@
         ( t (cons (car sides) (checkMoveIsSideAndRemoveSide (cdr sides) move)) )
     )
 )
+
+(defun removeSidesForMoves (sides moves)
+    (cond
+        ( (null moves) sides )
+        (t (removeSidesForMoves (checkMoveIsSideAndRemoveSide sides (car moves) (cdr moves) )))
+    )
+)
