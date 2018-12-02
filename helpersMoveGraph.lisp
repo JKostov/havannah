@@ -1,35 +1,8 @@
 
-(defvar *grafTest* '(
-            ("A" ( (0 "X") (1 "X") (2 "-") (3 "-"))) 
-         ("B" ( (0 "-") (1 "X") (2 "-") (3 "-") (4 "-"))) 
-      ("C" ( (0 "X") (1 "-") (2 "-") (3 "X") (4 "X") (5 "-"))) 
-    ("D" ( (0 "-") (1 "-") (2 "-") (3 "-") (4 "-") (5 "-") (6 "-"))) 
-      ("E" ( (1 "-") (2 "-") (3 "-") (4 "-") (5 "-") (6 "-"))) 
-         ("F" ( (2 "-") (3 "-") (4 "-") (5 "-") (6 "-"))) 
-            ("G" ( (3 "-") (4 "-") (5 "-") (6 "-"))) 
-))
 (defvar *neighbours* '())
-(defvar *xMovesGraph* '(
-    (("C" 0) ())
-    (("C" 3) (("C" 4)))
-    (("C" 4) (("C" 3)))
-    (("B" 1) (("A" 0) ("A" 1)))
-    (("A" 1) (("A" 0) ("B" 1)))
-    (("A" 0) (("A" 1) ("B" 1)))
-))
+(defvar *xMovesGraph* '())
+(defvar *oMovesGraph* '())
 
-;; (      ( (("B" 2)) (("A" 1))  )      ((("A" 1)) NIL))
-
-(defvar *oMovesGraph* '(
-))
-
-
-(defun checkIfValidAndPlay (letter index)
-    (cond 
-        ((string/= (cadr (assoc index (cadr (assoc letter *grafTest* :test #'string=)))) "-" ) '())
-        (t (setf (cadr (assoc index (cadr (assoc letter *grafTest* :test #'string=)))) "X"))
-    )
-)
 ;; helper function for findingNeighbours - checks if current element is valid neighbour
 (defun checkIfValidPosition (letter index state)
     (cadr (assoc index (cadr (assoc letter state :test #'string=)))))
@@ -76,7 +49,7 @@
 (defun prepareNodeAndNeighbours (node sign state)
     (findNeighbours (car node) (cadr node) state)
     (setq *neighbours* (filterMyNeighbours *neighbours* sign state))
-    (cons (cons node '()) (cons *neighbours* '())))
+    (cons node (list *neighbours*)))
 
 ;;checks if list is member of list of lists
 (defun clanp (el l)
@@ -99,10 +72,10 @@
 ;;adds move to move graph
 (defun addToMoveGraph (move sign state)
     (let ((preparedMove (prepareNodeAndNeighbours move sign state)))
-       (if (string= sign "X") 
+        (if (string= sign "X") 
             (setq *xMovesGraph* (cons preparedMove *xMovesGraph*)) 
             (setq *oMovesGraph* (cons preparedMove *oMovesGraph*)))
-       (if (string= sign "X") 
+        (if (string= sign "X") 
             (setq *xMovesGraph* (addBackwardRelationship (cadr preparedMove) *xMovesGraph* move)) 
             (setq *oMovesGraph* (addBackwardRelationship (cadr preparedMove) *oMovesGraph* move)))
     )
@@ -110,19 +83,7 @@
 
 ;; adds move to the graph of moves
 (defun prepareAndAddToMoveGraph (move sign state)
-    (checkIfValidAndPlay (car move) (cadr move))
     (findNeighbours (car move) (cadr move) state)
     (filterMyNeighbours *neighbours* sign state)
     (addToMoveGraph move sign state)
 )
-
-;;(print (prepareAndAddToMoveGraph '("B" 0) "X" *grafTest*))
-;;(print *grafTest*)
-
-(defun prepar (node list)
- (cons  node (list list))
-)
-
-(print (prepar '("B" 1) '(
-    '("A" 0) '("A" 3)
-)))

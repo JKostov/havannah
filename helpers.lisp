@@ -1,3 +1,4 @@
+(load "helpersMoveGraph.lisp")
 
 ;Function that check if the move is valid for the sent state
 (defun checkIfValid (state letter index)
@@ -15,7 +16,12 @@
         ( (not (listp move)) (format t "~%Invalid move! Please insert the move in list such as (B 2):") (enterMoveReturnNewState state) )
         ( (not (= (length move) 2)) (format t "~%Invalid move! The move list should contain 2 elements (C 3):") (enterMoveReturnNewState state) )
         ( (null (checkIfValid state (car move) (cadr move))) (format t "~%Invalid move!") (enterMoveReturnNewState state) )
-        ( t (prog1 (playMoveOnStateForPlayer (car move) (cadr move) state *currentPlayer*) (changePlayer) ) )
+        ( t (prog1 
+                (playMoveOnStateForPlayer (car move) (cadr move) state *currentPlayer*) 
+                (prepareAndAddToMoveGraph move *currentPlayer* state)
+                (changePlayer) 
+            )
+        )
     )
 )
 
