@@ -83,6 +83,6 @@
 (defun removeSidesForMoves (sides moves)
     (cond
         ( (null moves) sides )
-        (t (removeSidesForMoves (checkMoveIsSideAndRemoveSide sides (car moves) (cdr moves) )))
+        (t (removeSidesForMoves (checkMoveIsSideAndRemoveSide sides (car moves)) (cdr moves) ))
     )
 )

@@ -11,7 +11,7 @@
 
 (generateEdges *numberOfCells*)
 (generateSides *numberOfCells* )
-(print *sides*)
+;; (print *sides*)
 
 (do
     ((go *gameOver* (setq go *gameOver*)))

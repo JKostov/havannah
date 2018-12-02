@@ -144,8 +144,8 @@
         (checkFork move sign state)
     )
     (cond 
-            ( (< (length *currentSides*) 4) t)
-            ( t '())
+        ( (< (length *currentSides*) 4) t)
+        ( t '())
     )
 )
 
