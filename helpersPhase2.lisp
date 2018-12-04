@@ -39,6 +39,16 @@
     )
 )
 
+(defun findNeighbours2 (letter index state)
+    (append
+        (if (not (null (checkIfValidPosition (string letter) (1- index) state))) (list (list (string letter) (1- index))) '() )
+        (if (not (null (checkIfValidPosition (string letter) (1+ index) state))) (list (list (string letter) (1+ index))) '() )
+        (if (not (null (checkIfValidPosition (string (code-char (1- (char-code (char (string letter) 0))))) (1- index) state)))  (list (list (string (code-char (1- (char-code (char (string letter) 0))))) (1- index))) '() )
+        (if (not (null (checkIfValidPosition (string (code-char (1- (char-code (char (string letter) 0))))) index state)))  (list (list (string (code-char (1- (char-code (char (string letter) 0))))) index)) '() )
+        (if (not (null (checkIfValidPosition (string (code-char (1+ (char-code (char (string letter) 0))))) (1+ index) state))) (list (list (string (code-char (1+ (char-code (char (string letter) 0))))) (1+ index))) '() )
+        (if (not (null (checkIfValidPosition (string (code-char (1+ (char-code (char (string letter) 0))))) index state)))  (list (list (string (code-char (1+ (char-code (char (string letter) 0))))) index)) '() )
+    )
+)
 
 ;; filters neighbours that have same sign   
 (defun filterMyNeighbours (list sign state)
@@ -50,9 +60,7 @@
 
 ;; prepares current move for graph of moves
 (defun prepareNodeAndNeighbours (node sign state)
-    (findNeighbours (car node) (cadr node) state)
-    (setq *neighbours* (filterMyNeighbours *neighbours* sign state))
-    (cons node (list *neighbours*)))
+    (cons node (list (filterMyNeighbours (findNeighbours2 (car node) (cadr node) state) sign state))))
 
 ;;checks if list is member of list of lists
 (defun clanp (el l)
@@ -87,8 +95,7 @@
 
 ;; adds move to the graph of moves
 (defun prepareAndAddToMoveGraph (move sign state)
-    (findNeighbours (car move) (cadr move) state)
-    (filterMyNeighbours *neighbours* sign state)
+    (filterMyNeighbours (findNeighbours2 (car move) (cadr move) state) sign state)
     (addToMoveGraph move sign state)
 )
 
@@ -156,8 +163,7 @@
         ( (member move nodes :test 'equal) '() )
         (t
             (progn
-                (findNeighbours (car move) (cadr move) state)
-                (let ((validNeighbours (filterMyNeighbours *neighbours* sign state)))
+                (let ((validNeighbours (filterMyNeighbours (findNeighbours2 (car move) (cadr move) state) sign state)))
                     (setq *currentSides* (removeSidesForMoves *currentSides* (cons move validNeighbours)))
                     (cond 
                         ((null validNeighbours) '())
@@ -184,9 +190,8 @@
 )
 
 (defun checkRing (move sign graph state)
-    (findNeighbours (car move) (cadr move) state)
     (let 
-        ((validNeighbours (filterMyNeighbours *neighbours* sign state)))
+        ((validNeighbours (filterMyNeighbours (findNeighbours2 (car move) (cadr move) state) sign state)))
         (mapcar #'(lambda (n)
             (cond
                 ( (equal *ring* t) '() )
@@ -198,11 +203,7 @@
 )
 
 (defun findSameNeighbours (n1 n2 state)
-    (findNeighbours (car n1) (cadr n1) state)
-    (setq neighbours1 (copy-tree *neighbours*))
-    (findNeighbours (car n2) (cadr n2) state)
-    (setq neighbours2 (copy-tree *neighbours*))
-    (findSameElementsInLists neighbours1 neighbours2)
+    (findSameElementsInLists (findNeighbours2 (car n1) (cadr n1) state) (findNeighbours2 (car n2) (cadr n2) state))
 )
 
 (defun findSameElementsInLists (l1 l2)
