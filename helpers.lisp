@@ -19,8 +19,7 @@
         ( t (prog1 
                 (playMoveOnStateForPlayer (car move) (cadr move) state *currentPlayer*) 
                 (prepareAndAddToMoveGraph move *currentPlayer* state)
-                (setq *gameOver* (checkBridgeEndGame move *currentPlayer*))
-                (setq *gameOver* (or (checkFork move *currentPlayer* (returnLatestState)) *gameOver*))
+                (setq *gameOver* (or (checkBridgeEndGame move *currentPlayer*) (checkForkEndGame move *currentPlayer* (returnLatestState)) (checkRingEndGame move *currentPlayer* (returnLatestState))))
                 (if (null *gameOver*) (changePlayer)) 
             )
         )

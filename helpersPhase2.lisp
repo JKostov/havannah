@@ -3,6 +3,7 @@
 (defvar *xMovesGraph* '())
 (defvar *oMovesGraph* '())
 (defvar *currentSides* '())
+(defvar *ring* '())
 
 ;; helper function for findingNeighbours - checks if current element is valid neighbour
 (defun checkIfValidPosition (letter index state)
@@ -35,7 +36,8 @@
     ;; letter+1  num
     (cond
         ( (not (null (checkIfValidPosition (string (code-char (1+ (char-code (char letter 0))))) index state))) (setq *neighbours* (cons (list (string (code-char (1+ (char-code (char letter 0))))) index) *neighbours*)))
-    ))
+    )
+)
 
 
 ;; filters neighbours that have same sign   
@@ -138,10 +140,10 @@
 (defun checkForkEndGame(move sign state)
     (setq *currentSides* (copy-tree *sides*))
     (if (string= sign "X") 
-        (checkFork move sign state)
+        (checkFork move sign state '())
     )
     (if (string= sign "O") 
-        (checkFork move sign state)
+        (checkFork move sign state '())
     )
     (cond 
         ( (< (length *currentSides*) 4) t)
@@ -149,22 +151,72 @@
     )
 )
 
-(defun checkFork (move sign state)
+(defun checkFork (move sign state nodes)
+    (cond
+        ( (member move nodes :test 'equal) '() )
+        (t
+            (progn
+                (findNeighbours (car move) (cadr move) state)
+                (let ((validNeighbours (filterMyNeighbours *neighbours* sign state)))
+                    (setq *currentSides* (removeSidesForMoves *currentSides* (cons move validNeighbours)))
+                    (cond 
+                        ((null validNeighbours) '())
+                        ( (< (length *currentSides*) 4) '())
+                        ( t (dolist (n validNeighbours) (checkFork n sign state (cons move nodes)) ))
+                    )   
+                )
+            )
+        )
+    )
+    
+)
+
+;;ring
+;------------------------------------------------------------------------------------
+(defun checkRingEndGame (move sign state)
+    (if (string= sign "X") 
+        (checkRing move sign *xMovesGraph* state)
+    )
+    (if (string= sign "O") 
+        (checkRing move sign *oMovesGraph* state)
+    )
+    *ring*
+)
+
+(defun checkRing (move sign graph state)
     (findNeighbours (car move) (cadr move) state)
-    (let ((validNeighbours (filterMyNeighbours *neighbours* sign state)))
-        (setq *currentSides* (removeSidesForMoves *currentSides* validNeighbours))
-        (cond 
-            ((null validNeighbours) '())
-            ( (< (length *currentSides*) 4) '())
-            ( t (dolist (n validNeighbours) (checkFork n sign state) ))
-            ;; za svakog od suseda proveri da li je side,
-                ;; ako jeste onda izbaci tu stranu iz novi sides
-            ;; ako new sides ima count 3 elementa posle toga onda je kraj
-            ;; ide se u rekurziju i oruje rezultat
-        )   
+    (let 
+        ((validNeighbours (filterMyNeighbours *neighbours* sign state)))
+        (mapcar #'(lambda (n)
+            (cond
+                ( (equal *ring* t) '() )
+                ( (not (null (nadji-put (removeRelationShipFromGraph graph move n) (list move) n (findSameNeighbours move n state) ))) (setq *ring* t) )
+                (t '())
+            )
+        ) validNeighbours)  
     )
 )
 
-(defun checkIfSide (neighbours new Sides)
+(defun findSameNeighbours (n1 n2 state)
+    (findNeighbours (car n1) (cadr n1) state)
+    (setq neighbours1 (copy-tree *neighbours*))
+    (findNeighbours (car n2) (cadr n2) state)
+    (setq neighbours2 (copy-tree *neighbours*))
+    (findSameElementsInLists neighbours1 neighbours2)
+)
 
+(defun findSameElementsInLists (l1 l2)
+    (cond
+        ( (null l1) '() )
+        ( (member (car l1) l2 :test 'equal) (cons (car l1) (findSameElementsInLists (cdr l1) l2)) )
+        ( t (findSameElementsInLists (cdr l1) l2))
+    )
+)
+
+(defun removeRelationShipFromGraph (graph node relationship)
+    (cond
+        ( (null graph) '() )
+        ( (equal (caar graph) node) (append (list (list (caar graph) (remove relationship (cadar graph) :test 'equal))) (cdr graph)) )
+        ( t (cons (car graph) (removeRelationShipFromGraph (cdr graph) node relationship)) )
+    )
 )
