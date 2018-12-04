@@ -1,5 +1,6 @@
 (defvar *edges* '())
 (defvar *sides* '())
+
 ;; generates list of all edges depending on number of cells
 (defun generateEdges (numberOfCells)
     (setq *edges* 
@@ -15,14 +16,6 @@
 )
 
 ;;generates list of sides
-(defun generateSideList (numberOfLetter start stop)
-    (cond
-        ( (> start stop) '() )
-        ( t (append (list (list (string (code-char numberOfLetter)) start)) (generateSideList numberOfLetter (1+ start) stop ) ) )
-    )
-)
-;; helper for generating list of sides
-;---------------------------------------------------------------------------
 (defun generateSides (numberOfCells)
     (setq *sides* 
         (removeAllElements *edges*
@@ -31,10 +24,20 @@
                 (list (getSideListPlusLetterDown (+ 65 numberOfCells) (* 2 (1- numberOfCells)) numberOfCells))
                 (list (generateSideList 65 1 (- numberOfCells 2)))
                 (list (getSideListPlusLetter 66 0 numberOfCells))
-                (list (getSideListPlusLetter 66 (1- numberOfCells) numberOfCells))
+                (list (getSideListPlusNumberTop 66 numberOfCells numberOfCells))
                 (list (generateSideList (+ 65 (* 2 (1- numberOfCells))) numberOfCells (1- (* 2 (1- numberOfCells))) ))
             )
         )
+    )
+)
+
+;; helper for generating list of sides
+;---------------------------------------------------------------------------
+
+(defun generateSideList (numberOfLetter start stop)
+    (cond
+        ( (> start stop) '() )
+        ( t (append (list (list (string (code-char numberOfLetter)) start)) (generateSideList numberOfLetter (1+ start) stop ) ) )
     )
 )
 
@@ -49,6 +52,14 @@
     (cond
         ( (= letter (+ 65 (* 2 (1- numberOfCells)))) '() )
         (t (append (list (list (string (code-char letter)) number)) (getSideListPlusNumber (1+ letter) (1+ number) numberOfCells) ))
+    )
+)
+
+
+(defun getSideListPlusNumberTop (letter number numberOfCells)
+    (cond
+        ( (= letter (+ 65 (1- numberOfCells))) '() )
+        (t (append (list (list (string (code-char letter)) number)) (getSideListPlusNumberTop (1+ letter) (1+ number) numberOfCells) ))
     )
 )
 

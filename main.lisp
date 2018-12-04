@@ -11,12 +11,6 @@
 
 (generateEdges *numberOfCells*)
 (generateSides *numberOfCells* )
-;; (print *sides*)
-;; (trace removeSidesForMoves)
-
-;; (trace checkBridgeEndGame)
-;; (trace checkForkEndGame)
-;; (trace checkRingEndGame)
 
 (do
     ((go *gameOver* (setq go *gameOver*)))
