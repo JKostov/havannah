@@ -18,8 +18,8 @@
         ( (null (checkIfValid state (car move) (cadr move))) (format t "~%Invalid move!") (enterMoveReturnNewState state) )
         ( t (prog1 
                 (playMoveOnStateForPlayer (car move) (cadr move) state *currentPlayer*) 
-                (prepareAndAddToMoveGraph move *currentPlayer* state)
-                (setq *gameOver* (or (checkBridgeEndGame move *currentPlayer*) (checkForkEndGame move *currentPlayer* (returnLatestState)) (checkRingEndGame move *currentPlayer* (returnLatestState))))
+                (prepareAndAddToMoveGraph (list (string (car move)) (cadr move)) *currentPlayer* state)
+                (setq *gameOver* (or (checkBridgeEndGame (list (string (car move)) (cadr move)) *currentPlayer*) (checkForkEndGame (list (string (car move)) (cadr move)) *currentPlayer* (returnLatestState)) (checkRingEndGame (list (string (car move)) (cadr move)) *currentPlayer* (returnLatestState))))
                 (if (null *gameOver*) (changePlayer)) 
             )
         )
