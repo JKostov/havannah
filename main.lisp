@@ -4,7 +4,7 @@
 (load "edge.lisp")
 (load "dfs.lisp")
 (load "helpersPhase2.lisp")
-(load "mm.lisp")
+(load "minimax.lisp")
 
 (gameConfig) ;Initialize game configuration
 (initGame *numberOfCells*) ;Initialize game state
@@ -13,7 +13,7 @@
 (generateEdges *numberOfCells*)
 (generateSides *numberOfCells* )
 
-(print (minimax (returnLatestState) 2 "X"))
+(print (minimax (returnLatestState) 1 "X"))
 
 ;; (do
 ;;     ((go *gameOver* (setq go *gameOver*)))
