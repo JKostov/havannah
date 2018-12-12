@@ -4,6 +4,7 @@
 (load "edge.lisp")
 (load "dfs.lisp")
 (load "helpersPhase2.lisp")
+(load "mm.lisp")
 
 (gameConfig) ;Initialize game configuration
 (initGame *numberOfCells*) ;Initialize game state
@@ -12,8 +13,10 @@
 (generateEdges *numberOfCells*)
 (generateSides *numberOfCells* )
 
-(do
-    ((go *gameOver* (setq go *gameOver*)))
-    ( (not (null go)) (format t "Game over. ~%~a has won!" *currentPlayer*))
-    (progn (testGameOver) (enterMovePrintBoard)) ;(printStates (returnPossibleStates (returnLatestState))))
-)
+(print (minimax (returnLatestState) 2 "X"))
+
+;; (do
+;;     ((go *gameOver* (setq go *gameOver*)))
+;;     ( (not (null go)) (format t "Game over. ~%~a has won!" *currentPlayer*))
+;;     (progn (testGameOver) (enterMovePrintBoard)) ;(printStates (returnPossibleStates (returnLatestState))))
+;; )

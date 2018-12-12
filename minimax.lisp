@@ -1,5 +1,4 @@
 ;; minimax state depth currentMove
-(load "helpers.lisp")
 
 (defvar *grafTest* '(
             ("A" ( (0 "X") (1 "X") (2 "-") (3 "-"))) 
@@ -11,23 +10,45 @@
             ("G" ( (3 "-") (4 "-") (5 "-") (6 "-"))) 
 ))
 
-(defun minimax (state depth currentMove)
-    (let ((movesList (returnPossibleStates state))(comparator (if (string= "X" currentMove) '> '<)))
-         (cond ((or (zerop depth) (null movesList)) (list state (getAssessment state)))
-                (t (max-min-state (list (mapcar (lambda (x) (minimax x (1- depth) (if (string= currentMove "X") "O"  "X"))) movesList)) comparator)))))
+(setf *random-state* (make-random-state t)) ;Used in random function to generate random number
 
 ;; determines how good is the state
 (defun getAssessment(state)
-    (random (list-length state)))
+    (random 10)
+)
 
-(defun max-min-state (lsv comparator)
-    (max-min-state-i (cdr lsv) (car lsv) comparator)) 
+(defun minimax (state depth currentMove)
+    (let (
+            (lp (returnPossibleStates state))
+            (f  (if (string= "X" currentMove) 'max-state 'min-state))
+        )
+        (cond 
+            ( (or (zerop depth) (null lp) ) (list state (getAssessment state)))
+            (t (apply f (list (mapcar (lambda (x) (minimax x (1- depth) (if (string= currentMove "X") "O"  "X"))) lp))))
+        )
+    )
+) 
 
-(defun max-min-state-i (lsv state-value comparator)
-    (cond ((null lsv) state-value)
-        ((funcall comparator (cadar lsv) (cadr state-value))
-            (max-min-state-i (cdr lsv) (car lsv)))
-        (t (max-min-state-i (cdr lsv) state-value))))
+(defun min-state (lsv)
+    (min-state-i (cdr lsv) (car lsv))
+) 
 
+(defun min-state-i (lsv state-value)
+    (cond  
+        ( (null lsv) state-value )
+        ( (< (cadar lsv) (cadr state-value)) (min-state-i (cdr lsv) (car lsv)) ) 
+        ( t (min-state-i (cdr lsv) state-value) )
+    )
+)
 
-(print (returnPossibleStates *grafTest*))
+(defun max-state(lsv)
+    (max-state-i (cdr lsv) (car lsv))
+) 
+
+(defun max-state-i (lsv state-value)
+    (cond  
+        ( (null lsv) state-value )
+        ( (> (cadar lsv) (cadr state-value)) (max-state-i (cdr lsv) (car lsv)) ) 
+        ( t (max-state-i (cdr lsv) state-value) )
+    )
+)
