@@ -1,54 +1,55 @@
-;; minimax state depth currentMove
-
-(defvar *grafTest* '(
-            ("A" ( (0 "X") (1 "X") (2 "-") (3 "-"))) 
-         ("B" ( (0 "-") (1 "X") (2 "-") (3 "-") (4 "-"))) 
-      ("C" ( (0 "X") (1 "-") (2 "-") (3 "X") (4 "X") (5 "-"))) 
-    ("D" ( (0 "-") (1 "-") (2 "-") (3 "-") (4 "-") (5 "-") (6 "-"))) 
-      ("E" ( (1 "-") (2 "-") (3 "-") (4 "-") (5 "-") (6 "-"))) 
-         ("F" ( (2 "-") (3 "-") (4 "-") (5 "-") (6 "-"))) 
-            ("G" ( (3 "-") (4 "-") (5 "-") (6 "-"))) 
-))
-
 (setf *random-state* (make-random-state t)) ;Used in random function to generate random number
 
 ;; determines how good is the state
 (defun getAssessment(state)
-    (random 10)
-)
+    (random 100)
+)         
 
-(defun minimax (state depth currentMove)
-    (let (
-            (lp (returnPossibleStates state))
-            (f  (if (string= "X" currentMove) 'max-state 'min-state))
+(defun minimax (state depth alpha beta currentPlayer)
+    (cond
+        ((zerop depth)  (list state (getAssessment state)))
+        (t   
+            (let (
+                    (lp (returnPossibleStates state))
+                    (f  (if (string= "X" currentPlayer) 'max-state 'min-state))
+                )
+                (cond 
+                    ( (null lp) (list state (getAssessment state)))
+                    ( t (apply f (list lp depth alpha beta currentPlayer '())) )
+                )
+            )
         )
-        (cond 
-            ( (or (zerop depth) (null lp) ) (list state (getAssessment state)))
-            (t (apply f (list (mapcar (lambda (x) (minimax x (1- depth) (if (string= currentMove "X") "O"  "X"))) lp))))
+    )
+)
+
+(defun min-state (lp depth alpha beta currentPlayer state)
+    (cond
+        ( ( null lp) (list state beta) )
+        ( t 
+            (let* 
+                (
+                    (maxState (minimax (car lp) (1- depth) alpha beta (if (string= currentPlayer "X") "O"  "X")))
+                    (nb (apply 'min (list beta (cadr maxState))))
+                    (newState (if (< nb beta) (car lp) state))
+                )
+                (if  (> nb alpha) (min-state (cdr lp) depth alpha nb currentPlayer newState) (list newState nb) )
+            )
         )
     )
-) 
-
-(defun min-state (lsv)
-    (min-state-i (cdr lsv) (car lsv))
-) 
-
-(defun min-state-i (lsv state-value)
-    (cond  
-        ( (null lsv) state-value )
-        ( (< (cadar lsv) (cadr state-value)) (min-state-i (cdr lsv) (car lsv)) ) 
-        ( t (min-state-i (cdr lsv) state-value) )
-    )
 )
 
-(defun max-state(lsv)
-    (max-state-i (cdr lsv) (car lsv))
-) 
-
-(defun max-state-i (lsv state-value)
-    (cond  
-        ( (null lsv) state-value )
-        ( (> (cadar lsv) (cadr state-value)) (max-state-i (cdr lsv) (car lsv)) ) 
-        ( t (max-state-i (cdr lsv) state-value) )
+(defun max-state(lp depth alpha beta currentPlayer state)
+    (cond
+        ( (null lp) (list state alpha) )
+        ( t 
+            (let*
+                (
+                    (minState (minimax (car lp) (1- depth) alpha beta (if (string= currentPlayer "X") "O"  "X")))
+                    (na (apply 'max (list alpha (cadr minState))))
+                    (newState (if (> na alpha)  (car lp) state))
+                )
+                (if (< na beta) (max-state (cdr lp) depth na beta currentPlayer newState) (list newState na))
+            )
+        )
     )
-)
+)        

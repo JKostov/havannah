@@ -5,6 +5,7 @@
 (load "dfs.lisp")
 (load "helpersPhase2.lisp")
 (load "minimax.lisp")
+(load "helpersPhase3.lisp")
 
 (gameConfig) ;Initialize game configuration
 (initGame *numberOfCells*) ;Initialize game state
@@ -12,8 +13,10 @@
 
 (generateEdges *numberOfCells*)
 (generateSides *numberOfCells* )
-
-(print (minimax (returnLatestState) 1 "X"))
+(progn (testGameOver) (enterMovePrintBoard))
+(setq asd (car (minimax (returnLatestState) 3 -100 100 *currentPlayer*)))
+(print (findPlayedMoveFromState (returnLatestState) asd ))
+(printGame asd *numberOfCells*)
 
 ;; (do
 ;;     ((go *gameOver* (setq go *gameOver*)))
