@@ -9,21 +9,46 @@
 )
 
 ;Insert move, check if it is a valid one, creates a copy of the sent state and plays the move on the copy state and then it changes the current player
-(defun enterMoveReturnNewState (state)
-    (format t "~%~a is on the move. Insert your move (A 1):" *currentPlayer*)
+(defun enterMoveReturnNewState (state currentPlayer)
+    (format t "~%~a is on the move. Insert your move (A 1):" currentPlayer)
     (setq move (read))
     (cond
-        ( (not (listp move)) (format t "~%Invalid move! Please insert the move in list such as (B 2):") (enterMoveReturnNewState state) )
-        ( (not (= (length move) 2)) (format t "~%Invalid move! The move list should contain 2 elements (C 3):") (enterMoveReturnNewState state) )
-        ( (null (checkIfValid state (car move) (cadr move))) (format t "~%Invalid move!") (enterMoveReturnNewState state) )
-        ( t (prog1 
-                (playMoveOnStateForPlayer (car move) (cadr move) state *currentPlayer*) 
-                (prepareAndAddToMoveGraph (list (string (car move)) (cadr move)) *currentPlayer* state)
-                (setq *gameOver* (or (checkBridgeEndGame (list (string (car move)) (cadr move)) *currentPlayer*) (checkForkEndGame (list (string (car move)) (cadr move)) *currentPlayer* (returnLatestState)) (checkRingEndGame (list (string (car move)) (cadr move)) *currentPlayer* (returnLatestState))))
-                (if (null *gameOver*) (changePlayer)) 
+        ( (not (listp move)) (format t "~%Invalid move! Please insert the move in list such as (B 2):") (enterMoveReturnNewState state currentPlayer) )
+        ( (not (= (length move) 2)) (format t "~%Invalid move! The move list should contain 2 elements (C 3):") (enterMoveReturnNewState state currentPlayer) )
+        ( (null (checkIfValid state (car move) (cadr move))) (format t "~%Invalid move!") (enterMoveReturnNewState state currentPlayer) )
+        ( t 
+            (let*
+                (
+                    (letter (car move))
+                    (num (cadr move))
+                    (stringMove (list (string letter) num))
+                    (newState (playMoveOnStateForPlayer letter num state currentPlayer) )
+                    (tmp (prepareAndAddToMoveGraph stringMove currentPlayer state))
+                    (gameOver (testEndGame stringMove currentPlayer newState))
+                )
+                (if (null gameOver) (changePlayer))
+                newState 
             )
         )
     )
+)
+
+(defun testEndGame (move currentPlayer state)
+    (let
+        (
+            (bridge (checkBridgeEndGame move currentPlayer))
+            (fork (checkForkEndGame move currentPlayer state))
+            (ring (checkRingEndGame move currentPlayer state))
+        )
+        (cond
+            ( (or bridge fork ring) (setGameOver) )
+            (t '())
+        )
+    )
+)
+
+(defun setGameOver ()
+    (setq *gameOver* t)
 )
 
 ;Function used for changing the current player after a valid move
@@ -36,12 +61,12 @@
 
 ;Creates a copy of the sent state and plays move on the copy state for the sent player(X or O)
 (defun playMoveOnStateForPlayer (letter index state player)
-    (setq copyState (copy-tree state))
-    (cond 
-        ((string/= (cadr (assoc index (cadr (assoc letter copyState :test #'string=)))) "-" ) '())
-        (t (setf (cadr (assoc index (cadr (assoc letter copyState :test #'string=)))) player ret copyState))
+    (let
+        (
+            (copyState (copy-tree state))
+        )
+        (setf (cadr (assoc index (cadr (assoc letter copyState :test #'string=)))) player ret copyState)
     )
-    
 )
 
 ;Function that returns all possible states for the next player and the sent state
@@ -99,12 +124,13 @@
 )
 
 ;Function that reads a move play it create a new state then the state is appended to the global state list and the it prints the last game board
-(defun enterMovePrintBoard()
-    (appendNewStateOnGlobalStates (enterMoveReturnNewState (returnLatestState)) )
-    (printGame (returnLatestState) *numberOfCells*)
-)
-
-;Game over?
-(defun testGameOver()
-    (setq *gameOver* '())
+(defun enterMovePrintBoard(currentPlayer numberOfCells)
+    (let*
+        (
+            (latestState (returnLatestState))
+            (newStates (appendNewStateOnGlobalStates (enterMoveReturnNewState latestState currentPlayer) ))
+            (newState (returnLatestState))
+        )
+        (printGame newState numberOfCells)
+    )
 )

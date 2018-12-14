@@ -13,13 +13,14 @@
 
 (generateEdges *numberOfCells*)
 (generateSides *numberOfCells* )
-(progn (testGameOver) (enterMovePrintBoard))
-(setq asd (car (minimax (returnLatestState) 3 -100 100 *currentPlayer*)))
-(print (findPlayedMoveFromState (returnLatestState) asd ))
-(printGame asd *numberOfCells*)
 
-;; (do
-;;     ((go *gameOver* (setq go *gameOver*)))
-;;     ( (not (null go)) (format t "Game over. ~%~a has won!" *currentPlayer*))
-;;     (progn (testGameOver) (enterMovePrintBoard)) ;(printStates (returnPossibleStates (returnLatestState))))
-;; )
+(do
+    ((go *gameOver* (setq go *gameOver*)))
+    ( (not (null go)) (format t "Game over. ~%~a has won!" *currentPlayer*))
+    (cond   
+        ( (and (string= *firstPlayer* "H") (string= *currentPlayer* "X")) (enterMovePrintBoard *currentPlayer* *numberOfCells*) )
+        ( (and (string= *firstPlayer* "H") (string= *currentPlayer* "O")) (enterMovePrintBoardComputer *currentPlayer* *numberOfCells*) )
+        ( (and (string= *firstPlayer* "C") (string= *currentPlayer* "X")) (enterMovePrintBoardComputer *currentPlayer* *numberOfCells*) )
+        ( t (string= *currentPlayer* "X") (enterMovePrintBoard *currentPlayer* *numberOfCells*) )
+    )
+)

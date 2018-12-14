@@ -1,5 +1,4 @@
 (defvar *states* '()) ;List used to store game states based on players moves, format:  ( (("A" ( (1 "-") (2 "-") ... )) ("B" ( (1 "-") (2 "-") ... )) ...) )
-(defvar *minus*); Used for printing
 (defvar *gameOver* '()) ;Global variable used to signalize when the game is over
 
 ;Recursive function used for row initialization (("A" ( (1 "-") (2 "-") ... )) ("B" ( (1 "-") (2 "-") ... )) ...)
@@ -30,12 +29,11 @@
 
 ;Function used for printing the game board
 (defun printGame (state numberOfCells)
-    (setq *minus* 1) ;Used for printing
     (format t "~%")
     ;Prints empty space before numbers label
     (printEmptySpace (+ 2 numberOfCells))
     (printNumbersLabel 0 (1- numberOfCells))
-    (printRow (1- numberOfCells) state numberOfCells)
+    (printRow (1- numberOfCells) state numberOfCells numberOfCells 1)
 )
 
 ;Recursive function used for printing empty space
@@ -55,18 +53,18 @@
 )
 
 ;Recursive function used for printing one row format: Letter EmptySpace RowColumns
-(defun printRow (rowNumber state emptySpaceNumber)
+(defun printRow (rowNumber state emptySpaceNumber numberOfCells minus)
     (cond
         ( (null state) '() )
-        (t (format t "~a " (caar state)) (printEmptySpace emptySpaceNumber) (printRowColumns rowNumber state (cadar state) emptySpaceNumber) )
+        (t (format t "~a " (caar state)) (printEmptySpace emptySpaceNumber) (printRowColumns rowNumber state (cadar state) emptySpaceNumber numberOfCells (if (or (= emptySpaceNumber 1) (= minus 0) ) 0 1)) )
     )
 )
 
 ;Recursive function used for printing rows columns
-;If *minus* => emptySpaceNumber -= 1 else emptySpaceNumber += 1
-(defun printRowColumns (rowNumber state rowList emptySpaceNumber)
+;If minus => emptySpaceNumber -= 1 else emptySpaceNumber += 1
+(defun printRowColumns (rowNumber state rowList emptySpaceNumber numberOfCells minus)
     (cond
-        ( (null rowList) (if (< rowNumber (- (* 2  *numberOfCells*) 2)) (format t "~a" (1+ rowNumber))) (if (= emptySpaceNumber 1) (setq *minus* 0)) (format t "~%") (printRow (1+ rowNumber) (cdr state) (if (= 1 *minus*) (1- emptySpaceNumber) (1+ emptySpaceNumber) )) )
-        ( t (format t "~a " (cadar rowList)) (printRowColumns rowNumber state (cdr rowList) emptySpaceNumber) )
+        ( (null rowList) (if (< rowNumber (- (* 2  numberOfCells) 2)) (format t "~a" (1+ rowNumber))) (format t "~%") (printRow (1+ rowNumber) (cdr state) (if (= 1 minus) (1- emptySpaceNumber) (1+ emptySpaceNumber) ) numberOfCells minus) )
+        ( t (format t "~a " (cadar rowList)) (printRowColumns rowNumber state (cdr rowList) emptySpaceNumber numberOfCells minus) )
     )
 )

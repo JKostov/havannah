@@ -13,3 +13,35 @@
         ( t (caar prevNumber) )
     )
 )
+
+(defun enterMoveForComputer (state move currentPlayer)
+    (let*
+        (
+            (letter (car move))
+            (num (cadr move))
+            (newState (playMoveOnStateForPlayer letter num state currentPlayer))
+            (tmp (prepareAndAddToMoveGraph move currentPlayer state))
+            (gameOver (testEndGame move currentPlayer newState))
+        ) 
+        (if (null gameOver) (changePlayer))
+    )
+)
+
+(defun getDepth ()
+    3
+)
+
+(defun enterMovePrintBoardComputer (currentPlayer numberOfCells)
+    (format t "~%~a computer is on the move..." currentPlayer)
+    (let*
+        (
+            (latestState (returnLatestState))
+            (depth (getDepth))
+            (newState (car (minimax latestState depth -100 100 currentPlayer)))
+            (playedMove (findPlayedMoveFromState latestState newState))
+        )
+        (enterMoveForComputer latestState playedMove currentPlayer)
+        (appendNewStateOnGlobalStates newState)
+        (printGame newState numberOfCells)
+    )
+)
