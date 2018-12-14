@@ -64,8 +64,9 @@
     (let
         (
             (copyState (copy-tree state))
+            (valid (checkIfValid state letter index))
         )
-        (setf (cadr (assoc index (cadr (assoc letter copyState :test #'string=)))) player ret copyState)
+        (if (null valid) '() (setf (cadr (assoc index (cadr (assoc letter copyState :test #'string=)))) player ret copyState))
     )
 )
 

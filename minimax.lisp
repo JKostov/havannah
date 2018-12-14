@@ -29,7 +29,7 @@
             (let* 
                 (
                     (maxState (minimax (car lp) (1- depth) alpha beta (if (string= currentPlayer "X") "O"  "X")))
-                    (nb (apply 'min (list beta (cadr maxState))))
+                    (nb (min beta (cadr maxState)))
                     (newState (if (< nb beta) (car lp) state))
                 )
                 (if  (> nb alpha) (min-state (cdr lp) depth alpha nb currentPlayer newState) (list newState nb) )
@@ -45,7 +45,7 @@
             (let*
                 (
                     (minState (minimax (car lp) (1- depth) alpha beta (if (string= currentPlayer "X") "O"  "X")))
-                    (na (apply 'max (list alpha (cadr minState))))
+                    (na (max alpha (cadr minState)))
                     (newState (if (> na alpha)  (car lp) state))
                 )
                 (if (< na beta) (max-state (cdr lp) depth na beta currentPlayer newState) (list newState na))
