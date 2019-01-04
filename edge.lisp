@@ -1,5 +1,5 @@
-(defvar *edges* '())
-(defvar *sides* '())
+(defvar *edges* '()) ;Global read-only variable that is initialized when the game starts and it contais list with edge elements
+(defvar *sides* '()) ;Global read-only variable that is initialized when the game starts and it contains list that has one list per side with side elements
 
 ;; generates list of all edges depending on number of cells
 (defun generateEdges (numberOfCells)

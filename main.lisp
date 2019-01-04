@@ -11,8 +11,8 @@
 (initGame *numberOfCells*) ;Initialize game state
 (printGame (returnLatestState) *numberOfCells*) ;Print game board
 
-(generateEdges *numberOfCells*)
-(generateSides *numberOfCells* )
+(generateEdges *numberOfCells*) ;Initialize list with edge elements
+(generateSides *numberOfCells* ) ;Initialize list with side elements
 
 (do
     ((go *gameOver* (setq go *gameOver*)))
