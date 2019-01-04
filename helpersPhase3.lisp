@@ -21,7 +21,7 @@
             (num (cadr move))
             (newState (playMoveOnStateForPlayer letter num state currentPlayer))
             (tmp (prepareAndAddToMoveGraph move currentPlayer state))
-            (gameOver (testEndGame move currentPlayer newState))
+            (gameOver (testEndGame move currentPlayer newState (getMovesGraphForPlayer currentPlayer)))
         ) 
         (if (null gameOver) (changePlayer))
     )
@@ -37,7 +37,7 @@
         (
             (latestState (returnLatestState))
             (depth (getDepth))
-            (newState (car (minimax latestState depth -100 100 currentPlayer)))
+            (newState (car (minimax latestState depth -100 100 currentPlayer numberOfCells)))
             (playedMove (findPlayedMoveFromState latestState newState))
         )
         (enterMoveForComputer latestState playedMove currentPlayer)

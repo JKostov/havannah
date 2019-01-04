@@ -1,6 +1,21 @@
 (defvar *states* '()) ;List used to store game states based on players moves, format:  ( (("A" ( (1 "-") (2 "-") ... )) ("B" ( (1 "-") (2 "-") ... )) ...) )
 (defvar *gameOver* '()) ;Global variable used to signalize when the game is over
 
+;Sets the global viriable to true
+(defun setGameOver ()
+    (setq *gameOver* t)
+)
+
+;Helper function used for appending the new generated state from the played move to the global states list
+(defun appendNewStateOnGlobalStates (newState)
+    (setq *states* (append *states* (list newState)))
+)
+
+;Helper function that returns the last game state
+(defun returnLatestState ()
+    (car (last *states*))
+)
+
 ;Recursive function used for row initialization (("A" ( (1 "-") (2 "-") ... )) ("B" ( (1 "-") (2 "-") ... )) ...)
 ;For each row calls initColumn function for row columns initialization
 (defun initRow (currentLetter numberOfCells start stop)

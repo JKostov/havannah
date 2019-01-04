@@ -24,7 +24,7 @@
                     (stringMove (list (string letter) num))
                     (newState (playMoveOnStateForPlayer letter num state currentPlayer) )
                     (tmp (prepareAndAddToMoveGraph stringMove currentPlayer state))
-                    (gameOver (testEndGame stringMove currentPlayer newState))
+                    (gameOver (testEndGame stringMove currentPlayer newState (getMovesGraphForPlayer currentPlayer)))
                 )
                 (if (null gameOver) (changePlayer))
                 newState 
@@ -33,29 +33,17 @@
     )
 )
 
-(defun testEndGame (move currentPlayer state)
+(defun testEndGame (move currentPlayer state movesGraph)
     (let
         (
-            (bridge (checkBridgeEndGame move currentPlayer))
+            (bridge (checkBridgeEndGame move currentPlayer movesGraph))
             (fork (checkForkEndGame move currentPlayer state))
-            (ring (checkRingEndGame move currentPlayer state))
+            (ring (checkRingEndGame move currentPlayer state movesGraph))
         )
         (cond
             ( (or bridge fork ring) (setGameOver) )
             (t '())
         )
-    )
-)
-
-(defun setGameOver ()
-    (setq *gameOver* t)
-)
-
-;Function used for changing the current player after a valid move
-(defun changePlayer ()
-    (cond
-        ( (equal *currentPlayer* "X") (setq *currentPlayer* "O"))
-        (t (setq *currentPlayer* "X"))
     )
 )
 
@@ -71,11 +59,11 @@
 )
 
 ;Function that returns all possible states for the next player and the sent state
-(defun returnPossibleStates (state)
+(defun returnPossibleStates (state currentPlayer numberOfCells)
     (let*
         (
-            (nextPlayer *currentPlayer*)
-            (possibleStates (reverse (newStatesRows state nextPlayer 65 *numberOfCells* 0 (1- *numberOfCells*))))
+            (nextPlayer currentPlayer)
+            (possibleStates (reverse (newStatesRows state nextPlayer 65 numberOfCells 0 (1- numberOfCells))))
         )
         possibleStates
     )
@@ -104,24 +92,6 @@
         )
         
     )
-)
-
-;Helper function used for printing all the possible states
-(defun printStates (states)
-    (cond
-        ( (null states) '())
-        ( t (printGame (car states) *numberOfCells*) (printStates (cdr states)))
-    )
-)
-
-;Helper function used for appending the new generated state from the played move to the global states list
-(defun appendNewStateOnGlobalStates (newState)
-    (setq *states* (append *states* (list newState)))
-)
-
-;Helper function that returns the last game state
-(defun returnLatestState ()
-    (car (last *states*))
 )
 
 ;Function that reads a move play it create a new state then the state is appended to the global state list and the it prints the last game board
