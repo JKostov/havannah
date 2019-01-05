@@ -6,6 +6,7 @@
 (load "helpersPhase2.lisp")
 (load "minimax.lisp")
 (load "helpersPhase3.lisp")
+(load "helpersPhase4.lisp")
 
 (gameConfig) ;Initialize game configuration
 (initGame *numberOfCells*) ;Initialize game state

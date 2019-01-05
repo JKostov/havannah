@@ -21,14 +21,14 @@
             (num (cadr move))
             (newState (playMoveOnStateForPlayer letter num state currentPlayer))
             (tmp (prepareAndAddToMoveGraph move currentPlayer state))
-            (gameOver (testEndGame move currentPlayer newState (getMovesGraphForPlayer currentPlayer)))
+            (gameOver (testEndGameAndSetGameOver move currentPlayer newState (getMovesGraphForPlayer currentPlayer)))
         ) 
         (if (null gameOver) (changePlayer))
     )
 )
 
 (defun getDepth ()
-    3
+    1
 )
 
 (defun enterMovePrintBoardComputer (currentPlayer numberOfCells)

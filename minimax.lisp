@@ -1,26 +1,22 @@
-(setf *random-state* (make-random-state t)) ;Used in random function to generate random number
-
-;; determines how good is the state
-(defun getAssessment(state)
-    (random 100)
-)         
+(load "helpersPhase4.lisp")       
 
 (defun minimax (state depth alpha beta currentPlayer numberOfCells)
     (cond
-        ((zerop depth)  (list state (getAssessment state)))
+        ((zerop depth)  (list state (getAssessment state currentPlayer)))
         (t   
             (let (
                     (lp (returnPossibleStates state currentPlayer numberOfCells))
                     (f  (if (string= "X" currentPlayer) 'max-state 'min-state))
                 )
                 (cond 
-                    ( (null lp) (list state (getAssessment state)))
+                    ( (null lp) (list state (getAssessment state currentPlayer)))
                     ( t (apply f (list lp depth alpha beta currentPlayer '() numberOfCells)) )
                 )
             )
         )
     )
 )
+;; (trace returnPossibleStates)
 
 (defun min-state (lp depth alpha beta currentPlayer state numberOfCells)
     (cond

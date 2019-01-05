@@ -92,6 +92,17 @@
     )
 )
 
+(defun getMovesGraphForNewMove (move sign state)
+    (let*
+        (
+            (preparedMove (prepareNodeAndNeighbours move sign state))
+            (movesGraph (getMovesGraphForPlayer sign))
+            (newMovesGraph (cons preparedMove movesGraph))
+        )
+        (addBackwardRelationship (cadr preparedMove) newMovesGraph move)
+    )
+)
+
 ;; adds move to the graph of moves
 (defun prepareAndAddToMoveGraph (move sign state)
     (addToMoveGraph move sign state)

@@ -24,11 +24,25 @@
                     (stringMove (list (string letter) num))
                     (newState (playMoveOnStateForPlayer letter num state currentPlayer) )
                     (tmp (prepareAndAddToMoveGraph stringMove currentPlayer state))
-                    (gameOver (testEndGame stringMove currentPlayer newState (getMovesGraphForPlayer currentPlayer)))
+                    (gameOver (testEndGameAndSetGameOver stringMove currentPlayer newState (getMovesGraphForPlayer currentPlayer)))
                 )
                 (if (null gameOver) (changePlayer))
                 newState 
             )
+        )
+    )
+)
+
+(defun testEndGameAndSetGameOver (move currentPlayer state movesGraph)
+    (let
+        (
+            (bridge (checkBridgeEndGame move currentPlayer movesGraph))
+            (fork (checkForkEndGame move currentPlayer state))
+            (ring (checkRingEndGame move currentPlayer state movesGraph))
+        )
+        (cond
+            ( (or bridge fork ring) (setGameOver) )
+            (t '())
         )
     )
 )
@@ -40,10 +54,7 @@
             (fork (checkForkEndGame move currentPlayer state))
             (ring (checkRingEndGame move currentPlayer state movesGraph))
         )
-        (cond
-            ( (or bridge fork ring) (setGameOver) )
-            (t '())
-        )
+        (or bridge fork ring)
     )
 )
 
