@@ -34,27 +34,34 @@
 (defun getAssessment(state currentPlayer)
     (let*
         (
+            (numberOfCells *numberOfCells*)
             (facts (createStateFactsFromState state))
-            (rules (returnRules *numberOfCells*) )
+            (rules (returnRules numberOfCells) )
         )
         (prepare-knowledge rules facts 1)
         (cond
             ( (and (string/= currentPlayer "X") (= (mod (getDepth) 2 ) 1) )
                 (cond
-                    ( (> (count-results '(finish_x)) 0) 1000 )
+                    ( (> (count-results '(finish_x)) 0) 2000 )
+                    ( (> (count-results '(finish_x_back)) 0) 1000 )
                     ( (> (- (count-results '(middle_up_x)) (count-results '(counter_x))) -1) (+ 100 (count-results '(middle_up_x))))
                     ( (> (- (count-results '(middle_down_x)) (count-results '(counter_x))) -3) (+ 50 (count-results '(middle_down_x))))
-                    ( (= (count-results '(middle_o)) 0) (+ 30 (count-results '(middle_x)) ))
+                    ( (> (- (+ 9 (1- (* 2 numberOfCells))) (+ (count-results '(counter_x)) (count-results '(counter_o)) )) 0) (+ 30 (count-results '(middle_x))))
+                    ( (and (> (- (+ 11 (1- (* 2 numberOfCells))) (+ (count-results '(counter_x)) (count-results '(counter_o)) )) 0) (= (count-results '(middle_up2_x)) 1) ) 25)
+                    ( (and (> (- (+ 12 (1- (* 2 numberOfCells))) (+ (count-results '(counter_x)) (count-results '(counter_o)) )) 0) (= (count-results '(middle_down2_x)) 1) ) 20)
                     ( (> (count-results '(middledown_x)) 0) (+ 10 (count-results '(middledown_x)) ))
                     (t 1)
                 )
             )
             (t
                 (cond
-                    ( (> (count-results '(finish_o)) 0) -1000 )
+                    ( (> (count-results '(finish_o)) 0) -2000 )
+                    ( (> (count-results '(finish_o_back)) 0) -1000 )
                     ( (> (- (count-results '(middle_up_o)) (count-results '(counter_o))) -1) (- -100 (count-results '(middle_up_o))))
                     ( (> (- (count-results '(middle_down_o)) (count-results '(counter_o))) -3) (- -50 (count-results '(middle_down_o))))
-                    ( (= (count-results '(middle_x)) 0) (- -30 (count-results '(middle_o))))
+                    ( (> (- (+ 9 (1- (* 2 numberOfCells))) (+ (count-results '(counter_x)) (count-results '(counter_o)) )) 0) (- -30 (count-results '(middle_o))))
+                    ( (and (> (- (+ 11 (1- (* 2 numberOfCells))) (+ (count-results '(counter_x)) (count-results '(counter_o)) )) 0) (= (count-results '(middle_up2_o)) 1) )  -25)
+                    ( (and (> (- (+ 12 (1- (* 2 numberOfCells))) (+ (count-results '(counter_x)) (count-results '(counter_o)) )) 0) (= (count-results '(middle_down2_o)) 1) ) -20)
                     ( (> (count-results '(middledown_o)) 0) (- -10 (count-results '(middledown_o)) ))
                     (t -1)
                 )
@@ -115,11 +122,19 @@
 
             (if (and ("X" ?a ?b)  (!eq ?a (- numberOfCells 2)) (!eq ?b 0)) (middle_up_x))
             (if (and ("O" ?c ?d)  (!eq ?c (- numberOfCells 2)) (!eq ?d 0)) (middle_up_o))
+
+            (if (and ("X" ?a ?b)  (!eq ?a (- numberOfCells 2)) (!eq ?b 1)) (middle_up2_x))
+            (if (and ("O" ?c ?d)  (!eq ?c (- numberOfCells 2)) (!eq ?d 1)) (middle_up2_o))
+
             (if (and ("X" ?a ?b)  (!eq ?a (- numberOfCells 2)) (!eq ?b (- (* 2 numberOfCells) 3) )) (middle_up_x))
             (if (and ("O" ?c ?d)  (!eq ?c (- numberOfCells 2)) (!eq ?d (- (* 2 numberOfCells) 3) )) (middle_up_o))
 
             (if (and ("X" ?a ?b)  (!eq ?a numberOfCells) (!eq ?b 1)) (middle_down_x))
             (if (and ("O" ?c ?d)  (!eq ?c numberOfCells) (!eq ?d 1)) (middle_down_o))
+
+            (if (and ("X" ?a ?b)  (!eq ?a numberOfCells) (!eq ?b 2)) (middle_down2_x))
+            (if (and ("O" ?c ?d)  (!eq ?c numberOfCells) (!eq ?d 2)) (middle_down2_o))
+
             (if (and ("X" ?a ?b)  (!eq ?a numberOfCells) (!eq ?b (- (* 2 numberOfCells) 2) )) (middle_down_x))
             (if (and ("O" ?c ?d)  (!eq ?c numberOfCells) (!eq ?d (- (* 2 numberOfCells) 2) )) (middle_down_o))
 
@@ -128,8 +143,11 @@
             (if ("O" ?c ?d) (counter_o))
 
             ;FinishMove
-            (if (and ("X" ?a ?b) (!eq (list ?a ?b) (findFinishingMove "O" numberOfCells))) (finish_x))
-            (if (and ("O" ?c ?d) (!eq (list ?c ?d) (findFinishingMove "X" numberOfCells))) (finish_o))
+            (if (and ("X" ?a ?b) (!eq (list ?a ?b) (findFinishingMove "O" numberOfCells))) (finish_x_back))
+            (if (and ("O" ?c ?d) (!eq (list ?c ?d) (findFinishingMove "X" numberOfCells))) (finish_o_back))
+
+            (if (and ("X" ?a ?b) (!eq (list ?a ?b) (findFinishingMove "X" numberOfCells))) (finish_x))
+            (if (and ("O" ?c ?d) (!eq (list ?c ?d) (findFinishingMove "O" numberOfCells))) (finish_o))
         )
     'numberOfCells numberOfCells)
 )
