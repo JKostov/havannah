@@ -1,3 +1,2 @@
-# havannah
-School project
-Havannah game implementation in LISP
+# Havannah
+School project - Havannah game implementation in LISP
